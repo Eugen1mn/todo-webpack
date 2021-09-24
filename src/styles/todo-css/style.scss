@@ -1,0 +1,126 @@
+$title-text-color: #ff0000;
+$text-color: #000000;
+$primary-white-color: #ffffff;
+$primary-bg-color: rgb(236, 233, 233);
+$primary-gray-color: gray;
+
+* {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: $primary-bg-color;
+}
+
+#root {
+  padding: 100px 0;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  h1 {
+    font-size: 80px;
+    font-style: italic;
+    text-align: center;
+    color: $title-text-color;
+    opacity: 0.5;
+  }
+}
+
+#main {
+  width: 320px;
+  margin: 0 auto;
+
+  background: $primary-white-color;
+
+  -webkit-box-shadow: 2px 5px 16px 0px #0b325e,
+    5px 5px 15px 5px rgba(0, 0, 0, 0);
+  box-shadow: 2px 5px 16px 0px #0b325e, 5px 5px 15px 5px rgba(0, 0, 0, 0);
+
+  #add_input {
+    font-size: 20px;
+
+    height: 30px;
+    width: 95%;
+
+    padding-left: 10px;
+
+    outline: 0;
+    outline-offset: 0;
+    border: none;
+  }
+
+  button {
+    font-size: 20px;
+
+    padding: 2px;
+
+    border: 1px solid $primary-gray-color;
+    background: $primary-white-color;
+    border-radius: 4px;
+  }
+
+  .list-item {
+    font-size: 20px;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    padding: 5px;
+
+    background: $primary-white-color;
+    border-top: 2px solid $primary-gray-color;
+  }
+
+  .list-item button {
+    padding: 5;
+    border: none;
+    font: inherit;
+    color: inherit;
+    background-color: transparent;
+    cursor: pointer;
+  }
+
+  .isDone {
+    text-decoration: line-through;
+    opacity: 0.5;
+  }
+
+  .change_input {
+    font-size: 20px;
+
+    height: 30px;
+
+    outline: 0;
+    outline-offset: 0;
+    border: none;
+  }
+
+  .button_group {
+    display: flex;
+    justify-content: space-between;
+
+    padding: 10px;
+    border-top: 2px solid $primary-gray-color;
+
+    .group-btn {
+      font-size: 14px;
+      padding: 1px, 2px;
+      border: 1px solid $primary-gray-color;
+      border-radius: 4px;
+    }
+
+    .group-btn:hover {
+      background: $primary-gray-color;
+    }
+
+    .active-btn {
+      background: $primary-gray-color;
+    }
+  }
+}
