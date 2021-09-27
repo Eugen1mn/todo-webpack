@@ -1,5 +1,11 @@
+/* todolist model */
 import ToDoList from '../../models/model-todo/model';
+
+/* styles */
 import '../../styles/todo-css/style.scss';
+
+/* components */
+import createBtn from '../../components/button';
 
 const todoItem = new ToDoList();
 
@@ -49,12 +55,17 @@ const clearComplitedBtn = document.createElement('button');
 clearComplitedBtn.classList.add('group-btn', 'delete-complited');
 clearComplitedBtn.textContent = 'Clear complited';
 
+const someBtn = createBtn('someBtn', () => {
+  console.log('Im some button');
+});
+
 /*  APPEND GROUP  */
 buttonsActionWrapper.append(
   showAllBtn,
   showActiveBtn,
   showComplitedBtn,
   clearComplitedBtn,
+  someBtn,
 );
 
 /* APPEND MAIN */
