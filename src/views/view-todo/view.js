@@ -7,6 +7,7 @@ import '../../styles/main.scss';
 /* components */
 import createBtn from '../../components/button';
 import createTodoItem from '../../components/task-item';
+import createInputChange from '../../components/change-input';
 
 const todoItem = new ToDoList();
 
@@ -138,8 +139,7 @@ function theClick(e, id) {
         clearTimeout(waitingForClick);
         waitingForClick = false;
 
-        const inputChangeText = document.createElement('input');
-        inputChangeText.classList.add('change_input');
+        const inputChangeText = createInputChange();
         let textEl = [];
         if (e.target.classList.contains('text')) {
           textEl = e.target;
