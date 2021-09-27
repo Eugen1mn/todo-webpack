@@ -1,3 +1,6 @@
+/* styles */
+// import './style.scss';
+
 const createBtn = (title, handler) => {
   const btn = document.createElement('button');
   btn.classList.add('group-btn');

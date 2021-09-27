@@ -2,17 +2,18 @@
 import ToDoList from '../../models/model-todo/model';
 
 /* styles */
-import '../../styles/todo-css/style.scss';
+import '../../styles/main.scss';
 
 /* components */
 import createBtn from '../../components/button';
+import createTodoItem from '../../components/task-item';
 
 const todoItem = new ToDoList();
 
 /* VIEW */
 const rootDiv = document.querySelector('#root');
 
-/* TITLE */
+/* title */
 const titleToDo = document.createElement('h1');
 titleToDo.textContent = 'Todolist';
 
@@ -35,72 +36,15 @@ const buttonsActionWrapper = document.createElement('div');
 buttonsActionWrapper.setAttribute('id', 'button_group');
 buttonsActionWrapper.classList.add('button_group');
 
-/* ALL */
-const showAllBtn = document.createElement('button');
-showAllBtn.classList.add('group-btn', 'show-all-btn');
-showAllBtn.textContent = 'All';
-
-/* SHOW ACTIVE */
-const showActiveBtn = document.createElement('button');
-showActiveBtn.classList.add('group-btn', 'show-activ-btn');
-showActiveBtn.textContent = 'Active';
-
-/* SHOW COMPILED */
-const showComplitedBtn = document.createElement('button');
-showComplitedBtn.classList.add('group-btn', 'show-complited-btn');
-showComplitedBtn.textContent = 'Complited';
-
-/* CLEAR COMPILED ALL */
-const clearComplitedBtn = document.createElement('button');
-clearComplitedBtn.classList.add('group-btn', 'delete-complited');
-clearComplitedBtn.textContent = 'Clear complited';
-
-const someBtn = createBtn('someBtn', () => {
-  console.log('Im some button');
-});
-
-/*  APPEND GROUP  */
-buttonsActionWrapper.append(
-  showAllBtn,
-  showActiveBtn,
-  showComplitedBtn,
-  clearComplitedBtn,
-  someBtn,
-);
-
-/* APPEND MAIN */
-main.append(addInput, todoListEl);
-/* APPEND ROOT */
-rootDiv.append(titleToDo, main);
-
 /* RENDER */
 function render(store) {
   todoListEl.innerHTML = '';
 
   store.forEach((item) => {
-    /* TODO ITEM */
-    const itemEl = document.createElement('li');
-    itemEl.setAttribute('id', item.id);
-    itemEl.classList.add('list-item');
+    /* create todolist item */
+    const itemEl = createTodoItem(item);
 
-    /* DELETE BUTTON */
-    const itemDeleteBtn = document.createElement('button');
-    itemDeleteBtn.textContent = 'x';
-    itemDeleteBtn.classList.add('item-delete-button');
-
-    /** ****** ITEM TEXT ******** */
-    const itemText = document.createElement('p');
-    itemText.textContent = item.text;
-    itemText.classList.add('text');
-
-    if (item.status) {
-      itemText.classList.add('isDone');
-    } else {
-      itemText.classList.remove('isDone');
-    }
-
-    /** ****** APPEND ITEM AND LIST ******** */
-    itemEl.append(itemText, itemDeleteBtn);
+    /* append item from list */
     todoListEl.appendChild(itemEl);
   });
 
@@ -110,6 +54,55 @@ function render(store) {
     main.append(buttonsActionWrapper);
   }
 }
+
+/** ****** TOGGLE ACTIVE ******** */
+function toggleActiveBtn(el) {
+  el.children[0].classList.remove('active-btn');
+  el.children[1].classList.remove('active-btn');
+  el.children[2].classList.remove('active-btn');
+  el.children[3].classList.remove('active-btn');
+}
+
+/* show all */
+const showAllBtn = createBtn('All', (e) => {
+  toggleActiveBtn(e.target.parentElement);
+  e.target.classList.add('active-btn');
+  render(todoItem.getAll());
+});
+
+/* show active */
+const showActiveBtn = createBtn('Active', (e) => {
+  toggleActiveBtn(e.target.parentElement);
+  e.target.classList.add('active-btn');
+  render(todoItem.getActive());
+});
+
+/* show complited */
+const showComplitedBtn = createBtn('Complited', (e) => {
+  toggleActiveBtn(e.target.parentElement);
+  e.target.classList.add('active-btn');
+  render(todoItem.getComplited());
+});
+
+/* clearcompleted all */
+const clearComplitedBtn = createBtn('Clear complited', (e) => {
+  toggleActiveBtn(e.target.parentElement);
+  render(todoItem.clearComplited());
+});
+
+/*  append group  */
+buttonsActionWrapper.append(
+  showAllBtn,
+  showActiveBtn,
+  showComplitedBtn,
+  clearComplitedBtn,
+);
+
+/* APPEND MAIN */
+main.append(addInput, todoListEl);
+
+/* APPEND ROOT */
+rootDiv.append(titleToDo, main);
 
 /* EVENT LISTENERS */
 addInput.addEventListener('keypress', (e) => {
@@ -125,14 +118,6 @@ addInput.addEventListener('blur', (e) => {
   e.target.value = '';
   render(todoItem.getAll());
 });
-
-/** ****** TOGGLE ACTIVE ******** */
-function toggleActiveBtn(e) {
-  e.currentTarget.children[0].classList.remove('active-btn');
-  e.currentTarget.children[1].classList.remove('active-btn');
-  e.currentTarget.children[2].classList.remove('active-btn');
-  e.currentTarget.children[3].classList.remove('active-btn');
-}
 
 /** ****** HELPER DOUBLE CLICK ******** */
 let waitingForClick = false;
@@ -194,35 +179,5 @@ todoListEl.addEventListener('click', (e) => {
   if (e.target.classList.contains('list-item')) {
     const id = +e.target.id;
     theClick(e, id);
-  }
-});
-
-/* BUTTON GROUP EVENT */
-buttonsActionWrapper.addEventListener('click', (e) => {
-  if (e.target.classList.contains('button_group')) {
-    return;
-  }
-
-  toggleActiveBtn(e);
-
-  if (e.target.classList.contains('show-all-btn')) {
-    e.target.classList.toggle('active-btn');
-    render(todoItem.getAll());
-  }
-
-  if (e.target.classList.contains('show-activ-btn')) {
-    e.target.classList.toggle('active-btn');
-    render(todoItem.getActive());
-  }
-
-  if (e.target.classList.contains('show-complited-btn')) {
-    e.target.classList.toggle('active-btn');
-    render(todoItem.getComplited());
-  }
-
-  if (e.target.classList.contains('delete-complited')) {
-    e.target.parentElement.children[0].classList.toggle('active-btn');
-    todoItem.clearComplited();
-    render(todoItem.getAll());
   }
 });

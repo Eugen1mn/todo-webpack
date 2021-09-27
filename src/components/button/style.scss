@@ -1,0 +1,27 @@
+$primary-gray-color: gray;
+$primary-white-color: #ffffff;
+
+button {
+  font-size: 14px;
+
+  padding: 0px;
+
+  border: 1px solid $primary-gray-color;
+  background: $primary-white-color;
+  border-radius: 4px;
+}
+
+.group-btn {
+  font-size: 14px;
+  padding: 1px, 2px;
+  border: 1px solid $primary-gray-color;
+  border-radius: 4px;
+}
+
+.group-btn:hover {
+  background: $primary-gray-color;
+}
+
+.active-btn {
+  background: $primary-gray-color;
+}
