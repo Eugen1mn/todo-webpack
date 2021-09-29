@@ -4,6 +4,9 @@ import ToDoList from '../../models/model-todo/model';
 /* event emitter */
 import EventEmitter from '../../models/event-emitter/event-emitter';
 
+/* state */
+import State from '../../models/state/state';
+
 /* styles */
 import '../../styles/main.scss';
 
@@ -151,13 +154,20 @@ function theClick(e, id) {
   }
 }
 
+/* STATE */
+const state = new State();
+
 /* event emitter */
 const emiter = new EventEmitter();
 
 emiter.subscribe('event: add-task', (e) => {
-  todoItem.create(e.target.value);
+  state.setState({ type: 'ADD', payload: todoItem.create(e.target.value) });
   e.target.value = '';
-  render(todoItem.getAll());
+  render(state.getState({ type: 'todos' }));
+
+  //   todoItem.create(e.target.value);
+  //   e.target.value = '';
+  //   render(todoItem.getAll());
 });
 
 emiter.subscribe('event: todo-event', (e) => {
