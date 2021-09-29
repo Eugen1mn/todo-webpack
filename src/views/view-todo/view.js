@@ -59,15 +59,6 @@ function render(store) {
   }
 }
 
-/* event emitter */
-const emiter = new EventEmitter();
-
-emiter.subscribe('event: task-change', (e) => {
-  todoItem.create(e.target.value);
-  e.target.value = '';
-  render(todoItem.getAll());
-});
-
 /** ****** TOGGLE ACTIVE ******** */
 function toggleActiveBtn(el) {
   el.children[0].classList.remove('active-btn');
@@ -117,19 +108,6 @@ main.append(addInput, todoListEl);
 /* APPEND ROOT */
 rootDiv.append(titleToDo, main);
 
-/* EVENT LISTENERS */
-addInput.addEventListener('keypress', (e) => {
-  if (e.key === 'Enter') {
-    todoItem.create(e.target.value);
-    e.target.value = '';
-    render(todoItem.getAll());
-  }
-});
-
-addInput.addEventListener('blur', (e) => {
-  emiter.trigger('event: task-change', e);
-});
-
 /** ****** HELPER DOUBLE CLICK ******** */
 let waitingForClick = false;
 
@@ -173,8 +151,16 @@ function theClick(e, id) {
   }
 }
 
-/* TODO EVENT */
-todoListEl.addEventListener('click', (e) => {
+/* event emitter */
+const emiter = new EventEmitter();
+
+emiter.subscribe('event: add-task', (e) => {
+  todoItem.create(e.target.value);
+  e.target.value = '';
+  render(todoItem.getAll());
+});
+
+emiter.subscribe('event: todo-event', (e) => {
   if (e.target.classList.contains('item-delete-button')) {
     const id = +e.target.parentElement.id;
     todoItem.deleteTask(id);
@@ -190,4 +176,22 @@ todoListEl.addEventListener('click', (e) => {
     const id = +e.target.id;
     theClick(e, id);
   }
+});
+
+/* *****EVENT LISTENERS***** */
+
+/* add task */
+addInput.addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') {
+    emiter.trigger('event: add-task', e);
+  }
+});
+
+addInput.addEventListener('blur', (e) => {
+  emiter.trigger('event: add-task', e);
+});
+
+/* todo event */
+todoListEl.addEventListener('click', (e) => {
+  emiter.trigger('event: todo-event', e);
 });
