@@ -1,6 +1,9 @@
 /* todolist model */
 import ToDoList from '../../models/model-todo/model';
 
+/* event emitter */
+import EventEmitter from '../../models/event-emitter/event-emitter';
+
 /* styles */
 import '../../styles/main.scss';
 
@@ -55,6 +58,15 @@ function render(store) {
     main.append(buttonsActionWrapper);
   }
 }
+
+/* event emitter */
+const emiter = new EventEmitter();
+
+emiter.subscribe('event: task-change', (e) => {
+  todoItem.create(e.target.value);
+  e.target.value = '';
+  render(todoItem.getAll());
+});
 
 /** ****** TOGGLE ACTIVE ******** */
 function toggleActiveBtn(el) {
@@ -115,9 +127,7 @@ addInput.addEventListener('keypress', (e) => {
 });
 
 addInput.addEventListener('blur', (e) => {
-  todoItem.create(e.target.value);
-  e.target.value = '';
-  render(todoItem.getAll());
+  emiter.trigger('event: task-change', e);
 });
 
 /** ****** HELPER DOUBLE CLICK ******** */
