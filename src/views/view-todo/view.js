@@ -5,7 +5,7 @@ import ToDoList from '../../models/model-todo/model';
 import EventEmitter from '../../models/event-emitter/event-emitter';
 
 /* state */
-import State from '../../models/state/state';
+import Store from '../../models/todos-store/todos-store';
 
 /* styles */
 import '../../styles/main.scss';
@@ -155,26 +155,22 @@ function theClick(e, id) {
 }
 
 /* STATE */
-const state = new State();
+const store = new Store();
 
 /* event emitter */
 const emiter = new EventEmitter();
 
 emiter.subscribe('event: add-task', (e) => {
-  state.setState({ type: 'ADD', payload: todoItem.create(e.target.value) });
+  store.dispatch({ type: 'ADD', payload: e.target.value });
   e.target.value = '';
-  render(state.getState({ type: 'todos' }));
-
-  //   todoItem.create(e.target.value);
-  //   e.target.value = '';
-  //   render(todoItem.getAll());
+  render(store.getState().todoStore);
 });
 
 emiter.subscribe('event: todo-event', (e) => {
   if (e.target.classList.contains('item-delete-button')) {
     const id = +e.target.parentElement.id;
     todoItem.deleteTask(id);
-    render(todoItem.getAll());
+    render(store.getState().todoStore);
   }
 
   if (e.target.classList.contains('text')) {
