@@ -1,5 +1,5 @@
 /* todolist model */
-import ToDoList from '../../models/model-todo/model';
+// import ToDoList from '../../models/model-todo/model';
 
 /* event emitter */
 import EventEmitter from '../../models/event-emitter/event-emitter';
@@ -15,7 +15,9 @@ import createBtn from '../../components/button';
 import createTodoItem from '../../components/task-item';
 import createInputChange from '../../components/change-input';
 
-const todoItem = new ToDoList();
+// const todoItem = new ToDoList();
+/* STATE */
+const store = new Store();
 
 /* VIEW */
 const rootDiv = document.querySelector('#root');
@@ -44,10 +46,10 @@ buttonsActionWrapper.setAttribute('id', 'button_group');
 buttonsActionWrapper.classList.add('button_group');
 
 /* RENDER */
-function render(store) {
+function render(todoStore) {
   todoListEl.innerHTML = '';
 
-  store.forEach((item) => {
+  todoStore.forEach((item) => {
     /* create todolist item */
     const itemEl = createTodoItem(item);
 
@@ -55,7 +57,7 @@ function render(store) {
     todoListEl.appendChild(itemEl);
   });
 
-  if (todoItem.getAll().length === 0) {
+  if (store.getState().todoStore.length === 0) {
     buttonsActionWrapper.remove();
   } else {
     main.append(buttonsActionWrapper);
@@ -74,27 +76,34 @@ function toggleActiveBtn(el) {
 const showAllBtn = createBtn('All', (e) => {
   toggleActiveBtn(e.target.parentElement);
   e.target.classList.add('active-btn');
-  render(todoItem.getAll());
+  render(store.getState().todoStore);
 });
 
 /* show active */
 const showActiveBtn = createBtn('Active', (e) => {
   toggleActiveBtn(e.target.parentElement);
   e.target.classList.add('active-btn');
-  render(todoItem.getActive());
+  const activeStore = store
+    .getState()
+    .todoStore.filter((item) => item.status === false);
+  render(activeStore);
 });
 
 /* show complited */
 const showComplitedBtn = createBtn('Complited', (e) => {
   toggleActiveBtn(e.target.parentElement);
   e.target.classList.add('active-btn');
-  render(todoItem.getComplited());
+  const complitedStore = store
+    .getState()
+    .todoStore.filter((item) => item.status === true);
+  render(complitedStore);
 });
 
 /* clearcompleted all */
 const clearComplitedBtn = createBtn('Clear complited', (e) => {
   toggleActiveBtn(e.target.parentElement);
-  render(todoItem.clearComplited());
+  store.dispatch({ type: 'CLEAR_COMPLITED' });
+  render(store.getState().todoStore);
 });
 
 /*  append group  */
@@ -118,8 +127,8 @@ function theClick(e, id) {
   switch (e.detail) {
     case 1: // first click
       waitingForClick = setTimeout(() => {
-        todoItem.isDone(id);
-        render(todoItem.getAll());
+        store.dispatch({ type: 'ISDONE', payload: id });
+        render(store.getState().todoStore);
       }, 250);
       break;
 
@@ -145,17 +154,17 @@ function theClick(e, id) {
         inputChangeText.onblur = () => {
           textEl.textContent = inputChangeText.value;
           inputChangeText.remove();
-          todoItem.updateTask(id, textEl.textContent);
-          render(todoItem.getAll());
+          store.dispatch({
+            type: 'UPDATE',
+            payload: { id, text: textEl.textContent },
+          });
+          render(store.getState().todoStore);
         };
       }
 
       break;
   }
 }
-
-/* STATE */
-const store = new Store();
 
 /* event emitter */
 const emiter = new EventEmitter();
@@ -169,7 +178,7 @@ emiter.subscribe('event: add-task', (e) => {
 emiter.subscribe('event: todo-event', (e) => {
   if (e.target.classList.contains('item-delete-button')) {
     const id = +e.target.parentElement.id;
-    todoItem.deleteTask(id);
+    store.dispatch({ type: 'DELETE', payload: id });
     render(store.getState().todoStore);
   }
 
