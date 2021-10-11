@@ -4,7 +4,7 @@
 const createTodoItem = (item) => {
   /* todolist item */
   const todoItemEl = document.createElement('li');
-  todoItemEl.setAttribute('id', item.id);
+  todoItemEl.setAttribute('id', item._id);
   todoItemEl.classList.add('list-item');
 
   /* create delete button */
@@ -16,7 +16,7 @@ const createTodoItem = (item) => {
   const itemText = document.createElement('p');
   itemText.textContent = item.text;
   itemText.classList.add('text');
-  if (item.status) {
+  if (item.isDone) {
     itemText.classList.add('isDone');
   } else {
     itemText.classList.remove('isDone');

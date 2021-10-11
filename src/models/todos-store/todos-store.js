@@ -10,6 +10,13 @@ class Store {
     this.state = newState;
   }
 
+  getTaskById(id) {
+    const todoStore = this.state.todoStore.slice();
+    const index = todoStore.findIndex((item) => item._id === id);
+
+    return { ...todoStore[index] };
+  }
+
   getState() {
     return this.state;
   }

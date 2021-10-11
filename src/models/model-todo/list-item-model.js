@@ -6,7 +6,7 @@ export default class ListItemModel {
     textValidation(text);
 
     this.text = text;
-    this.status = false;
+    this.isDone = false;
     this.id = Date.now() + Math.floor(Math.random() * 10000);
   }
 }

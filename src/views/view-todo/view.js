@@ -1,8 +1,13 @@
-/* todolist model */
-// import ToDoList from '../../models/model-todo/model';
-
 /* event emitter */
 import EventEmitter from '../../models/event-emitter/event-emitter';
+
+import {
+  getAll,
+  addTask,
+  deleteTask,
+  deleteAllComplited,
+  updateTask,
+} from '../../service';
 
 /* state */
 import Store from '../../models/todos-store/todos-store';
@@ -85,7 +90,7 @@ const showActiveBtn = createBtn('Active', (e) => {
   e.target.classList.add('active-btn');
   const activeStore = store
     .getState()
-    .todoStore.filter((item) => item.status === false);
+    .todoStore.filter((item) => item.isDone === false);
   render(activeStore);
 });
 
@@ -95,15 +100,17 @@ const showComplitedBtn = createBtn('Complited', (e) => {
   e.target.classList.add('active-btn');
   const complitedStore = store
     .getState()
-    .todoStore.filter((item) => item.status === true);
+    .todoStore.filter((item) => item.isDone === true);
   render(complitedStore);
 });
 
 /* clearcompleted all */
 const clearComplitedBtn = createBtn('Clear complited', (e) => {
-  toggleActiveBtn(e.target.parentElement);
-  store.dispatch({ type: 'CLEAR_COMPLITED' });
-  render(store.getState().todoStore);
+  deleteAllComplited().then(() => {
+    toggleActiveBtn(e.target.parentElement);
+    store.dispatch({ type: 'CLEAR_COMPLITED' });
+    render(store.getState().todoStore);
+  });
 });
 
 /*  append group  */
@@ -127,8 +134,13 @@ function theClick(e, id) {
   switch (e.detail) {
     case 1: // first click
       waitingForClick = setTimeout(() => {
-        store.dispatch({ type: 'ISDONE', payload: id });
-        render(store.getState().todoStore);
+        const upTask = store.getTaskById(id);
+        updateTask({ ...upTask, isDone: !upTask.isDone }, upTask._id).then(
+          (data) => {
+            store.dispatch({ type: 'ISDONE', payload: data.data });
+            render(store.getState().todoStore);
+          },
+        );
       }, 250);
       break;
 
@@ -154,11 +166,13 @@ function theClick(e, id) {
         inputChangeText.onblur = () => {
           textEl.textContent = inputChangeText.value;
           inputChangeText.remove();
-          store.dispatch({
-            type: 'UPDATE',
-            payload: { id, text: textEl.textContent },
-          });
-          render(store.getState().todoStore);
+          const upTask = store.getTaskById(id);
+          updateTask({ ...upTask, text: textEl.textContent }, upTask._id).then(
+            (data) => {
+              store.dispatch({ type: 'UPDATE', payload: data.data });
+              render(store.getState().todoStore);
+            },
+          );
         };
       }
 
@@ -170,25 +184,29 @@ function theClick(e, id) {
 const emiter = new EventEmitter();
 
 emiter.subscribe('event: add-task', (e) => {
-  store.dispatch({ type: 'ADD', payload: e.target.value });
-  e.target.value = '';
-  render(store.getState().todoStore);
+  addTask({ taskName: e.target.value }).then((data) => {
+    store.dispatch({ type: 'ADD', payload: data.data });
+    e.target.value = '';
+    render(store.getState().todoStore);
+  });
 });
 
 emiter.subscribe('event: todo-event', (e) => {
   if (e.target.classList.contains('item-delete-button')) {
-    const id = +e.target.parentElement.id;
-    store.dispatch({ type: 'DELETE', payload: id });
-    render(store.getState().todoStore);
+    const { id } = e.target.parentElement;
+    deleteTask(id).then(() => {
+      store.dispatch({ type: 'DELETE', payload: id });
+      render(store.getState().todoStore);
+    });
   }
 
   if (e.target.classList.contains('text')) {
-    const id = +e.target.parentElement.id;
+    const { id } = e.target.parentElement;
     theClick(e, id);
   }
 
   if (e.target.classList.contains('list-item')) {
-    const id = +e.target.id;
+    const { id } = e.target;
     theClick(e, id);
   }
 });
@@ -209,4 +227,9 @@ addInput.addEventListener('blur', (e) => {
 /* todo event */
 todoListEl.addEventListener('click', (e) => {
   emiter.trigger('event: todo-event', e);
+});
+
+getAll().then((data) => {
+  store.dispatch({ type: 'SET_STATE', payload: data.data });
+  render(store.getState().todoStore);
 });
