@@ -1,6 +1,7 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const Dotenv = require('dotenv-webpack');
 require('babel-polyfill');
 
 module.exports = {
@@ -55,5 +56,6 @@ module.exports = {
     }),
 
     new CleanWebpackPlugin(),
+    new Dotenv(),
   ],
 };
